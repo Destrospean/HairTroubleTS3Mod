@@ -23,13 +23,13 @@ namespace Destrospean.HairTrouble
             }
         }
 
-        public static void ApplyHairstylesWithGrowthStateToAllOutfits(this SimDescription simDescription, HairGrowthStates hairGrowthState, bool spin = false)
+        public static void ApplyHairGrowthStateToAllOutfits(this SimDescription simDescription, HairGrowthStates hairGrowthState, bool spin = false)
         {
             CASPart? hairstyle = null;
-            simDescription.ApplyToAllOutfits((simBuilder, outfitCategory, outfitIndex) => ApplyHairstyleWithGrowthStateToOutfit(simDescription, simBuilder, outfitCategory, outfitIndex, hairGrowthState, ref hairstyle), spin);
+            simDescription.ApplyToAllOutfits((simBuilder, outfitCategory, outfitIndex) => ApplyHairGrowthStateToOutfit(simDescription, simBuilder, outfitCategory, outfitIndex, hairGrowthState, ref hairstyle), spin);
         }
 
-        public static SimOutfit ApplyHairstyleWithGrowthStateToOutfit(this SimDescription simDescription, SimBuilder simBuilder, OutfitCategories outfitCategory, int outfitIndex, HairGrowthStates hairGrowthState, ref CASPart? hairstyle)
+        public static SimOutfit ApplyHairGrowthStateToOutfit(this SimDescription simDescription, SimBuilder simBuilder, OutfitCategories outfitCategory, int outfitIndex, HairGrowthStates hairGrowthState, ref CASPart? hairstyle)
         {
             HairGrowthStates outfitHairGrowthState;
             hairstyle = hairstyle ?? (simDescription.GetOutfit(OutfitCategories.Everyday, 0).TryGetHairGrowthState(out outfitHairGrowthState, out hairstyle) && (outfitHairGrowthState & hairGrowthState) != 0 ? hairstyle : (GetValidHairstyles(hairGrowthState, simDescription.AgeGenderSpecies, allowHats: false).TryGetRandomItem(out hairstyle) ? hairstyle : null));
@@ -71,8 +71,8 @@ namespace Destrospean.HairTrouble
         public static HairGrowthStates GetHairGrowthState(this SimOutfit outfit)
         {
             HairGrowthStates hairGrowthState;
-            CASPart? part;
-            return outfit.TryGetHairGrowthState(out hairGrowthState, out part) ? hairGrowthState : 0;
+            CASPart? hairstyle;
+            return outfit.TryGetHairGrowthState(out hairGrowthState, out hairstyle) ? hairGrowthState : 0;
         }
 
         public static HairGrowthStates GetHairGrowthState(this SimDescription simDescription)
@@ -152,7 +152,7 @@ namespace Destrospean.HairTrouble
 
         public static void OnHairGrowthStateChanged(this SimDescription simDescription, HairGrowthStates hairGrowthState, HairGrowthStateChangeFlags flags)
         {
-            simDescription.ApplyHairstylesWithGrowthStateToAllOutfits(hairGrowthState);
+            simDescription.ApplyHairGrowthStateToAllOutfits(hairGrowthState);
             if (!simDescription.HasRootsShowing() && (flags & HairGrowthStateChangeFlags.NaturalGrowth) != 0 && !simDescription.HasOriginalHairColors())
             {
                 simDescription.HasRootsShowing(true);
@@ -180,25 +180,25 @@ namespace Destrospean.HairTrouble
 
         public static bool TryGetHairGrowthState(this SimOutfit outfit, out HairGrowthStates hairGrowthState)
         {
-            CASPart? part;
-            return outfit.TryGetHairGrowthState(out hairGrowthState, out part);
+            CASPart? hairstyle;
+            return outfit.TryGetHairGrowthState(out hairGrowthState, out hairstyle);
         }
 
-        public static bool TryGetHairGrowthState(this SimOutfit outfit, out HairGrowthStates hairGrowthState, out CASPart? part)
+        public static bool TryGetHairGrowthState(this SimOutfit outfit, out HairGrowthStates hairGrowthState, out CASPart? hairstyle)
         {
             int partIndex = Array.FindIndex(outfit.Parts, x => x.BodyType == BodyTypes.Hair);
             if (partIndex == -1)
             {
                 hairGrowthState = 0;
-                part = null;
+                hairstyle = null;
                 return false;
             }
-            return (part = outfit.Parts[partIndex]).Value.TryGetHairGrowthState(out hairGrowthState);
+            return (hairstyle = outfit.Parts[partIndex]).Value.TryGetHairGrowthState(out hairGrowthState);
         }
 
-        public static bool TryGetHairGrowthState(this CASPart part, out HairGrowthStates hairGrowthState)
+        public static bool TryGetHairGrowthState(this CASPart hairstyle, out HairGrowthStates hairGrowthState)
         {
-            return HairGrowthStateMap.TryGetValue(part.Key.ToS3PIFormatKeyString(), out hairGrowthState);
+            return HairGrowthStateMap.TryGetValue(hairstyle.Key.ToS3PIFormatKeyString(), out hairGrowthState);
         }
 
         public static bool TryGetHairGrowthState(this SimDescription simDescription, out HairGrowthStates hairGrowthState)
