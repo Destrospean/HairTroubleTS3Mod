@@ -5,7 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HairTrouble", "HairTrouble\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HairTroubleGrowthStateAssigner", "HairTroubleGrowthStateAssigner\HairTroubleGrowthStateAssigner.csproj", "{95B27166-5E72-4116-9E53-3AC352B8BC47}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Destrospean_HT_Base", "Destrospean_HT_Base\Destrospean_HT_Base.csproj", "{E6A29044-2388-4687-B3BA-06AD5C4DE6A3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HairTrouble_Base", "HairTrouble_Base\HairTrouble_Base.csproj", "{E6A29044-2388-4687-B3BA-06AD5C4DE6A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

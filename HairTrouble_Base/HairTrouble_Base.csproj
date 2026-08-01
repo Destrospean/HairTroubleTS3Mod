@@ -6,7 +6,7 @@
     <ProjectGuid>{E6A29044-2388-4687-B3BA-06AD5C4DE6A3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Destrospean.HairTrouble</RootNamespace>
-    <AssemblyName>Destrospean_HT_Base</AssemblyName>
+    <AssemblyName>HairTrouble_Base</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

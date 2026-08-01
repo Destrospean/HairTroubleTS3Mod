@@ -22,7 +22,7 @@ namespace Destrospean.HairTroubleGrowthStateAssigner
         VeryLong
     }
 
-    class MainClass
+    class Program
     {
         static Dictionary<PackageTag, IPackage> sGameContentPackages;
 
@@ -75,27 +75,15 @@ namespace Destrospean.HairTroubleGrowthStateAssigner
             }
 
             // Get a unique name for the assembly and _XML resource
-            var assemblyName = "Destrospean_HT" + System.Security.Cryptography.FNV32.GetHash(Guid.NewGuid().ToString());
+            var assemblyName = "HairTrouble_" + System.Security.Cryptography.FNV32.GetHash(Guid.NewGuid().ToString());
 
             // Load the base package and create a new package to clone to
-            IPackage basePackage = s3pi.Package.Package.OpenPackage(0, "Destrospean_HT_Base.package"),
-            newPackage = s3pi.Package.Package.NewPackage(0);
+            IPackage package = s3pi.Package.Package.NewPackage(0);
 
             // Get the assembly and XML
-            AssemblyDefinition assembly = null;
+            var assembly = AssemblyDefinition.ReadAssembly(typeof(Program).Assembly.GetManifestResourceStream("HairTrouble_Base.dll"));
             var xmlDocument = new System.Xml.XmlDocument();
-            foreach (var resourceIndexEntry in basePackage.FindAll(x => x.Instance == 0x268C5DD8E82D5492))
-            {
-                switch (resourceIndexEntry.ResourceType)
-                {
-                    case 0x333406C:
-                        xmlDocument.Load(((APackage)basePackage).GetResource(resourceIndexEntry));
-                        break;
-                    case 0x73FAA07:
-                        assembly = AssemblyDefinition.ReadAssembly(((ScriptResource.ScriptResource)s3pi.WrapperDealer.WrapperDealer.GetResource(0, basePackage, resourceIndexEntry)).Assembly.BaseStream);
-                        break;
-                }
-            }
+            xmlDocument.LoadXml("<?xml version=\"1.0\"?>\r\n<HairGrowthStateMap>\r\n</HairGrowthStateMap>");
 
             var rootNode = xmlDocument.SelectSingleNode("HairGrowthStateMap");
             var elements = new List<System.Xml.XmlElement>();
@@ -106,10 +94,10 @@ namespace Destrospean.HairTroubleGrowthStateAssigner
                     elements.Add(element);
                 }
             }
-            /*
+
             foreach (var casPartPackageResourceIndexEntryTuple in casPartPackageResourceIndexEntryTuples)
             {
-                var casp = (CASPartResource.CASPartResource)s3pi.WrapperDealer.WrapperDealer.GetResource(0, casPartPackageResourceIndexEntryTuple.Item1, casPartPackageResourceIndexEntryTuple.Item2);
+                var casp = new CASPartResource.CASPartResource(0, ((APackage)casPartPackageResourceIndexEntryTuple.Item1).GetResource(casPartPackageResourceIndexEntryTuple.Item2));
                 if (casp.Clothing != CASPartResource.ClothingType.Hair)
                 {
                     continue;
@@ -154,7 +142,7 @@ namespace Destrospean.HairTroubleGrowthStateAssigner
                 element.SetAttribute("GrowthState", growthState);
                 elements.Add(element);
             }
-            */
+            
             elements.Sort((a, b) =>
                 {
                     var comparison = ((int)Enum.Parse(typeof(HairGrowthStates), a.GetAttribute("GrowthState"))).CompareTo((int)Enum.Parse(typeof(HairGrowthStates), b.GetAttribute("GrowthState")));
@@ -193,15 +181,15 @@ namespace Destrospean.HairTroubleGrowthStateAssigner
             var scriptResourceKey = System.Security.Cryptography.FNV64.GetHash(assemblyName);
             var nameMapResource = new NameMapResource.NameMapResource(0, null);
             nameMapResource.Add(scriptResourceKey, assemblyName);
-            newPackage.AddResource(new ResourceKey(0x166038C, 0, 0), nameMapResource.Stream, true);
-            newPackage.AddResource(new ResourceKey(0x333406C, 0, scriptResourceKey), xmlStream, true);
-            newPackage.AddResource(new ResourceKey(0x73FAA07, 0, scriptResourceKey), new ScriptResource.ScriptResource(0, null)
+            package.AddResource(new ResourceKey(0x166038C, 0, 0), nameMapResource.Stream, true);
+            package.AddResource(new ResourceKey(0x333406C, 0, scriptResourceKey), xmlStream, true);
+            package.AddResource(new ResourceKey(0x73FAA07, 0, scriptResourceKey), new ScriptResource.ScriptResource(0, null)
                 {
                     Assembly = new BinaryReader(assemblyStream)
                 }.Stream, true);
 
             // Save the new package with the new name
-            newPackage.SaveAs(assemblyName + ".package");
+            package.SaveAs(assemblyName + ".package");
         }
     }
 }
