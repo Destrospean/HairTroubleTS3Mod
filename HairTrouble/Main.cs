@@ -7,11 +7,11 @@ using Sims3.SimIFace;
 
 namespace Destrospean.HairTrouble
 {
-    [MonoPatcherLib.Plugin]
     public class Main
     {
         static Main()
         {
+            Common.ReplaceMethod(typeof(Sims3.Gameplay.CAS.Genetics).GetMethod("InheritHairColor"), typeof(Replacements).GetMethod("InheritHairColor"));
             EventListener simDescriptionDisposedListener = null,
             simInstantiatedListener = null,
             simSelectedListener = null;

@@ -7,7 +7,6 @@ namespace Destrospean.HairTrouble
 {
     public static class Replacements
     {
-        [MonoPatcherLib.ReplaceMethod(typeof(Genetics), "InheritHairColor")]
         public static Color[] InheritHairColor(Sims3.SimIFace.CAS.SimBuilder target, SimDescription[] parentSims, System.Random random)
         {
             List<Genealogy> genealogies = new List<Genealogy>();
