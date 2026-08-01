@@ -9,6 +9,9 @@ namespace Destrospean.HairTrouble
 {
     public class Main
     {
+        [Tunable]
+        protected static bool kInstantiator = false;
+
         static Main()
         {
             Common.ReplaceMethod(typeof(Sims3.Gameplay.CAS.Genetics).GetMethod("InheritHairColor"), typeof(Replacements).GetMethod("InheritHairColor"));
