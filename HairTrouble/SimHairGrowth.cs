@@ -25,35 +25,26 @@ namespace Destrospean.HairTrouble
 
         public static void ApplyHairstylesWithGrowthStateToAllOutfits(this SimDescription simDescription, HairGrowthStates hairGrowthState, bool spin = false)
         {
-            simDescription.ApplyToAllOutfits((simBuilder, outfitCategory, outfitIndex) => ApplyHairstyleWithGrowthStateToOutfit(simDescription, simBuilder, outfitCategory, outfitIndex, hairGrowthState), spin);
+            CASPart? hairstyle;
+            HairGrowthStates outfitHairGrowthState;
+            if (!simDescription.GetOutfit(OutfitCategories.Everyday, 0).TryGetHairGrowthState(out outfitHairGrowthState, out hairstyle) || (outfitHairGrowthState & hairGrowthState) == 0)
+            {
+                GetValidHairstyles(hairGrowthState, simDescription.AgeGenderSpecies, OutfitCategories.Everyday, false).TryGetRandomItem(out hairstyle);
+            }
+            simDescription.ApplyToAllOutfits((simBuilder, outfitCategory, outfitIndex) => ApplyHairstyleWithGrowthStateToOutfit(simDescription, simBuilder, outfitCategory, outfitIndex, hairGrowthState, ref hairstyle), spin);
         }
 
-        public static SimOutfit ApplyHairstyleWithGrowthStateToOutfit(this SimDescription simDescription, SimBuilder simBuilder, OutfitCategories outfitCategory, int outfitIndex, HairGrowthStates hairGrowthState)
+        public static SimOutfit ApplyHairstyleWithGrowthStateToOutfit(this SimDescription simDescription, SimBuilder simBuilder, OutfitCategories outfitCategory, int outfitIndex, HairGrowthStates hairGrowthState, ref CASPart? hairstyle)
         {
-            HairGrowthStates outfitHairGrowthState;
-            if (simDescription.GetOutfit(outfitCategory, outfitIndex).TryGetHairGrowthState(out outfitHairGrowthState) && (outfitHairGrowthState & hairGrowthState) != 0)
+            CASPart[] validHairstyles = GetValidHairstyles(hairGrowthState, simDescription.AgeGenderSpecies, outfitCategory, false);
+            if (validHairstyles.Length == 0)
             {
                 return null;
             }
-            List<CASPart> validHairCASPs = new List<CASPart>();
-            foreach (KeyValuePair<string, HairGrowthStates> hairGrowthStateMapKvp in HairGrowthStateMap)
-            {
-                if (hairGrowthStateMapKvp.Value == hairGrowthState)
-                {
-                    CASPart casPart = new CASPart(S3PIResourceUtils.FromS3PIFormatKeyString(hairGrowthStateMapKvp.Key));
-                    if (casPart.Key != ResourceKey.kInvalidResourceKey && (casPart.Age & simDescription.Age) != 0 && (casPart.Gender & simDescription.Gender) != 0 && (casPart.Species & simDescription.Species) != 0 && (casPart.CategoryFlags & (uint)outfitCategory) != 0 /*&& (casPart.CategoryFlags & (uint)OutfitCategoriesExtended.ValidForRandom) != 0*/ && (casPart.CategoryFlags & (uint)(OutfitCategoriesExtended.IsHat | OutfitCategoriesExtended.IsHiddenInCAS)) == 0)
-                    {
-                        validHairCASPs.Add(casPart);
-                    }
-                }
-            }
-            if (validHairCASPs.Count == 0)
-            {
-                return null;
-            }
+            CASPart currentHair = (hairstyle = hairstyle ?? validHairstyles.GetRandomItem()).Value;
             simBuilder.PrepareForOutfit(simDescription.GetOutfit(outfitCategory, outfitIndex));
             simBuilder.RemoveParts(BodyTypes.Hair);
-            simBuilder.AddPart(validHairCASPs[Sims3.Gameplay.Core.RandomUtil.GetInt(0, validHairCASPs.Count - 1)]);
+            simBuilder.AddPart(Array.Exists(validHairstyles, x => x.Equals(currentHair)) ? currentHair : validHairstyles.GetRandomItem());
             OutfitUtils.InjectBodyHairColor(simBuilder, simDescription.BodyHairColor.ActiveColor);
             OutfitUtils.InjectEyeBrowHairColor(simBuilder, simDescription.EyebrowColor.ActiveColor);
             OutfitUtils.InjectHairColor(simBuilder, Array.ConvertAll(simDescription.FacialHairColors, x => x.ActiveColor), BodyTypes.Beard);
@@ -86,11 +77,7 @@ namespace Destrospean.HairTrouble
         {
             HairGrowthStates hairGrowthState;
             CASPart? part;
-            if (outfit.TryGetHairGrowthState(out hairGrowthState, out part))
-            {
-                return hairGrowthState;
-            }
-            return 0;
+            return outfit.TryGetHairGrowthState(out hairGrowthState, out part) ? hairGrowthState : 0;
         }
 
         public static HairGrowthStates GetHairGrowthState(this SimDescription simDescription)
@@ -106,6 +93,23 @@ namespace Destrospean.HairTrouble
                 return simDescription.GetHairGrowthState();
             }
             return 0;
+        }
+
+        public static CASPart[] GetValidHairstyles(HairGrowthStates hairGrowthState, CASAgeGenderFlags ageGenderSpecies, OutfitCategories outfitCategory = OutfitCategories.CategoryMask, bool allowHats = true)
+        {
+            List<CASPart> validHairstyles = new List<CASPart>();
+            foreach (KeyValuePair<string, HairGrowthStates> hairGrowthStateMapKvp in HairGrowthStateMap)
+            {
+                if (hairGrowthStateMapKvp.Value == hairGrowthState)
+                {
+                    CASPart hairstyle = new CASPart(S3PIResourceUtils.FromS3PIFormatKeyString(hairGrowthStateMapKvp.Key));
+                    if (hairstyle.Key != ResourceKey.kInvalidResourceKey && (hairstyle.Age & ageGenderSpecies) != 0 && (hairstyle.Gender & ageGenderSpecies) != 0 && (hairstyle.Species & ageGenderSpecies) != 0 && (hairstyle.CategoryFlags & (uint)outfitCategory) != 0 /*&& (casPart.CategoryFlags & (uint)OutfitCategoriesExtended.ValidForRandom) != 0*/ && (allowHats || (hairstyle.CategoryFlags & (uint)OutfitCategoriesExtended.IsHat) == 0) && (hairstyle.CategoryFlags & (uint)OutfitCategoriesExtended.IsHiddenInCAS) == 0)
+                    {
+                        validHairstyles.Add(hairstyle);
+                    }
+                }
+            }
+            return validHairstyles.ToArray();
         }
 
         public static bool IncrementHairGrowthState(this SimDescription simDescription, int by = 1, bool naturalGrowth = true, HairGrowthStateChangeFlags additionalFlags = 0)
