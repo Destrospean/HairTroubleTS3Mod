@@ -9,7 +9,7 @@ namespace Destrospean.HairTrouble
         public static T GetRandomItem<T>(this IEnumerable<T> enumerable)
         {
             List<T> list = new List<T>(enumerable);
-            return list[Sims3.Gameplay.Core.RandomUtil.GetInt(list.Count)];
+            return list[Sims3.Gameplay.Core.RandomUtil.GetInt(list.Count - 1)];
         }
 
         public static void Notify(string message, SimDescription simDescription, StyledNotification.NotificationStyle style)
@@ -56,13 +56,13 @@ namespace Destrospean.HairTrouble
         public static bool TryGetRandomItem<T>(this IEnumerable<T> enumerable, out T item) where T : class
         {
             List<T> list = new List<T>(enumerable);
-            return (item = list.Count == 0 ? null : list[Sims3.Gameplay.Core.RandomUtil.GetInt(list.Count)]) != null;
+            return (item = list.Count == 0 ? null : list[Sims3.Gameplay.Core.RandomUtil.GetInt(list.Count - 1)]) != null;
         }
 
         public static bool TryGetRandomItem<T>(this IEnumerable<T> enumerable, out T? item) where T : struct
         {
             List<T> list = new List<T>(enumerable);
-            return (item = list.Count == 0 ? (T?)null : list[Sims3.Gameplay.Core.RandomUtil.GetInt(list.Count)]).HasValue;
+            return (item = list.Count == 0 ? (T?)null : list[Sims3.Gameplay.Core.RandomUtil.GetInt(list.Count - 1)]).HasValue;
         }
     }
 }

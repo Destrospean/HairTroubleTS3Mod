@@ -32,7 +32,7 @@ namespace Destrospean.HairTrouble
         public static SimOutfit ApplyHairGrowthStateToOutfit(this SimDescription simDescription, SimBuilder simBuilder, OutfitCategories outfitCategory, int outfitIndex, HairGrowthStates hairGrowthState, ref CASPart? hairstyle)
         {
             HairGrowthStates outfitHairGrowthState;
-            hairstyle = hairstyle ?? (simDescription.GetOutfit(OutfitCategories.Everyday, 0).TryGetHairGrowthState(out outfitHairGrowthState, out hairstyle) && (outfitHairGrowthState & hairGrowthState) != 0 ? hairstyle : (GetValidHairstyles(hairGrowthState, simDescription.AgeGenderSpecies, allowHats: false).TryGetRandomItem(out hairstyle) ? hairstyle : null));
+            hairstyle = hairstyle ?? (simDescription.GetOutfit(OutfitCategories.Everyday, 0).TryGetHairGrowthState(out outfitHairGrowthState, out hairstyle) && (outfitHairGrowthState & hairGrowthState) != 0 ? hairstyle : GetValidHairstyles(simDescription.AgeGenderSpecies, hairGrowthState, allowHats: false).TryGetRandomItem(out hairstyle) ? hairstyle : null);
             if (hairstyle == null)
             {
                 return null;
@@ -90,7 +90,7 @@ namespace Destrospean.HairTrouble
             return 0;
         }
 
-        public static CASPart[] GetValidHairstyles(HairGrowthStates hairGrowthState, CASAgeGenderFlags ageGenderSpecies, OutfitCategories outfitCategory = OutfitCategories.CategoryMask, bool allowHats = true)
+        public static CASPart[] GetValidHairstyles(CASAgeGenderFlags ageGenderSpecies, HairGrowthStates hairGrowthState, OutfitCategories outfitCategory = OutfitCategories.All, bool allowHats = true)
         {
             List<CASPart> validHairstyles = new List<CASPart>();
             foreach (KeyValuePair<string, HairGrowthStates> hairGrowthStateMapKvp in HairGrowthStateMap)
@@ -98,7 +98,7 @@ namespace Destrospean.HairTrouble
                 if (hairGrowthStateMapKvp.Value == hairGrowthState)
                 {
                     CASPart hairstyle = new CASPart(S3PIResourceUtils.FromS3PIFormatKeyString(hairGrowthStateMapKvp.Key));
-                    if (hairstyle.Key != ResourceKey.kInvalidResourceKey && (hairstyle.Age & ageGenderSpecies) != 0 && (hairstyle.Gender & ageGenderSpecies) != 0 && (hairstyle.Species & ageGenderSpecies) != 0 && (hairstyle.CategoryFlags & (uint)outfitCategory) != 0 /*&& (casPart.CategoryFlags & (uint)OutfitCategoriesExtended.ValidForRandom) != 0*/ && (allowHats || (hairstyle.CategoryFlags & (uint)OutfitCategoriesExtended.IsHat) == 0) && (hairstyle.CategoryFlags & (uint)OutfitCategoriesExtended.IsHiddenInCAS) == 0)
+                    if (hairstyle.Key != ResourceKey.kInvalidResourceKey && (hairstyle.Age & ageGenderSpecies) != 0 && (hairstyle.Gender & ageGenderSpecies) != 0 && (hairstyle.Species & ageGenderSpecies) != 0 && (hairstyle.CategoryFlags & (uint)outfitCategory) != 0 /*&& (hairstyle.CategoryFlags & (uint)OutfitCategoriesExtended.ValidForRandom) != 0*/ && (allowHats || (hairstyle.CategoryFlags & (uint)OutfitCategoriesExtended.IsHat) == 0) && (hairstyle.CategoryFlags & (uint)OutfitCategoriesExtended.IsHiddenInCAS) == 0)
                     {
                         validHairstyles.Add(hairstyle);
                     }
