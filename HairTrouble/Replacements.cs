@@ -43,11 +43,11 @@ namespace Destrospean.HairTrouble
             SimDescription simDescription;
             if (parentGenealogies.Count > 0 && (float)random.NextDouble() * 100 < Genetics.kHairColorChooseGrandparentChance)
             {
-                simDescription = parentGenealogies[random.Next(0, parentGenealogies.Count)].SimDescription;
+                simDescription = parentGenealogies[random.Next(parentGenealogies.Count)].SimDescription;
             }
             else
             {
-                simDescription = genealogies[random.Next(0, genealogies.Count)].SimDescription;
+                simDescription = genealogies[random.Next(genealogies.Count)].SimDescription;
             }
             Color[] colors = new Color[10];
             for (int i = 0; i < 4; i++)
