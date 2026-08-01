@@ -151,17 +151,6 @@
       <HintPath>libs\s3pi.UserCAStPreset.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="s3pi.WrapperDealer">
-      <HintPath>libs\s3pi.WrapperDealer.dll</HintPath>
-    </Reference>
-    <Reference Include="s3piwrappers.AudioResources">
-      <HintPath>libs\s3piwrappers.AudioResources.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="s3piwrappers.Helpers">
-      <HintPath>libs\s3piwrappers.Helpers.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System.Custom">
       <HintPath>libs\System.Custom.dll</HintPath>
     </Reference>
@@ -169,9 +158,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Destrospean_HT_Base.package">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="LICENSE.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -181,5 +167,18 @@
     <None Include="InstallDirs.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HairTrouble_Base\HairTrouble_Base.csproj">
+      <Project>{E6A29044-2388-4687-B3BA-06AD5C4DE6A3}</Project>
+      <Name>HairTrouble_Base</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\HairTrouble_Base\bin\Release\HairTrouble_Base.dll">
+      <Link>HairTrouble_Base.dll</Link>
+      <LogicalName>HairTrouble_Base.dll</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Sims3.Gameplay.CAS;
+﻿using Sims3.Gameplay.CAS;
 using Sims3.SimIFace.CAS;
 
 namespace Destrospean.HairTrouble
@@ -10,7 +9,10 @@ namespace Destrospean.HairTrouble
 
         public static void ApplyToAllOutfits(this SimDescription simDescription, OutfitFunc outfitFunc, bool spin = false)
         {
-            using (SimBuilder simBuilder = new SimBuilder())
+            using (SimBuilder simBuilder = new SimBuilder
+                {
+                    UseCompression = true
+                })
             {
                 ApplyToAllOutfits(simDescription, simBuilder, outfitFunc, spin);
             }
@@ -42,14 +44,6 @@ namespace Destrospean.HairTrouble
                     }
                 }
             }
-            Dictionary<uint, int> specialOutfitIndices = new Dictionary<uint, int>();
-            if (simDescription.mSpecialOutfitIndices != null)
-            {
-                foreach (KeyValuePair<uint, int> specialOutfitIndexKvp in simDescription.mSpecialOutfitIndices)
-                {
-                    specialOutfitIndices.Add(specialOutfitIndexKvp.Key, simDescription.mSpecialOutfitIndices.Count - 1 - specialOutfitIndexKvp.Value);
-                }
-            }
             foreach (OutfitCategories outfitCategory in simDescription.ListOfCategories)
             {
                 System.Collections.ArrayList outfits = simDescription.Outfits[outfitCategory] as System.Collections.ArrayList;
@@ -57,20 +51,12 @@ namespace Destrospean.HairTrouble
                 {
                     continue;
                 }
-                for (int i = outfits.Count - 1; i > -1 ; i--)
+                for (int i = outfits.Count - 1; i > -1; i--)
                 {
                     if (simDescription.CreatedSim == null || outfitCategory != lastOutfitCategory || i != lastOutfitIndex || !spin)
                     {
                         simDescription.ReplaceOutfit(outfitCategory, i, outfitFunc(simBuilder, outfitCategory, i));
                     }
-                }
-            }
-            if (simDescription.mSpecialOutfitIndices != null)
-            {
-                simDescription.mSpecialOutfitIndices.Clear();
-                foreach (KeyValuePair<uint, int> specialOutfitIndexKvp in specialOutfitIndices)
-                {
-                    simDescription.mSpecialOutfitIndices.Add(specialOutfitIndexKvp.Key, specialOutfitIndexKvp.Value);
                 }
             }
             if (simDescription.CreatedSim != null && !spin)
@@ -91,17 +77,8 @@ namespace Destrospean.HairTrouble
         {
             if (newOutfit != null && newOutfit.IsValid)
             {
-                if (outfitCategory == OutfitCategories.Special)
-                {
-                    uint key = simDescription.GetSpecialOutfitKeyForIndex(outfitIndex);
-                    simDescription.RemoveSpecialOutfit(key);
-                    simDescription.AddSpecialOutfit(newOutfit, key);
-                }
-                else
-                {
-                    simDescription.RemoveOutfit(outfitCategory, outfitIndex, true);
-                    simDescription.AddOutfit(newOutfit, outfitCategory, outfitIndex);
-                }
+                simDescription.RemoveOutfitInternal(outfitCategory, outfitIndex, true, simDescription.IsUsingMaternityOutfits);
+                simDescription.AddOutfitInternal(newOutfit, outfitCategory, outfitIndex, simDescription.IsUsingMaternityOutfits, false);
             }
         }
     }

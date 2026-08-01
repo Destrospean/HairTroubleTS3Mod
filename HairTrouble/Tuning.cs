@@ -1,10 +1,8 @@
-﻿using Sims3.SimIFace;
-
-namespace Sims3.Gameplay.Destrospean
+﻿namespace Sims3.Gameplay.Destrospean
 {
     public static class HairTrouble
     {
-        [Tunable]
+        [Sims3.SimIFace.Tunable]
         public static bool kShowCheatInteractions;
     }
 }

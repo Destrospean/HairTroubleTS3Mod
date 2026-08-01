@@ -61,6 +61,7 @@
     <Compile Include="Main.cs" />
     <Compile Include="OutfitExtensions.cs" />
     <Compile Include="S3PIResourceUtils.cs" />
+    <Compile Include="ExtensionAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib">
@@ -105,11 +106,4 @@
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <ProjectReference Include="..\..\MonoPatcher\MonoPatcher\MonoPatcher.csproj">
-      <Project>{91460F7B-9C23-4A43-AB52-95EAC8D52D93}</Project>
-      <Name>MonoPatcher</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
 </Project>

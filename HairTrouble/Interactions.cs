@@ -21,9 +21,17 @@ namespace Destrospean.HairTrouble
             [DoesntRequireTuning]
             public class Definition : ImmediateInteractionDefinition<Sim, Sim, DecrementHairGrowthState>
             {
-                public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair interaction)
+                public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair iop)
                 {
                     return Localization.LocalizeString(target.IsFemale, sLocalizationKey + ":Name");
+                }
+
+                public override string[] GetPath(bool isFemale)
+                {
+                    return new[]
+                    {
+                        Localization.LocalizeString(isFemale, kLocalizationPath + ":Path")
+                    };
                 }
 
                 public override bool Test(Sim actor, Sim target, bool isAutonomous, ref Sims3.SimIFace.GreyedOutTooltipCallback greyedOutTooltipCallback)
@@ -48,9 +56,17 @@ namespace Destrospean.HairTrouble
             [DoesntRequireTuning]
             public class Definition : ImmediateInteractionDefinition<Sim, Sim, IncrementHairGrowthState>
             {
-                public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair interaction)
+                public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair iop)
                 {
                     return Localization.LocalizeString(target.IsFemale, sLocalizationKey + ":Name");
+                }
+
+                public override string[] GetPath(bool isFemale)
+                {
+                    return new[]
+                    {
+                        Localization.LocalizeString(isFemale, kLocalizationPath + ":Path")
+                    };
                 }
 
                 public override bool Test(Sim actor, Sim target, bool isAutonomous, ref Sims3.SimIFace.GreyedOutTooltipCallback greyedOutTooltipCallback)
@@ -74,9 +90,17 @@ namespace Destrospean.HairTrouble
 
             public class Definition : InteractionDefinition<Sim, IMirror, RemoveHairDye>
             {
-                public override string GetInteractionName(Sim actor, IMirror target, InteractionObjectPair interaction)
+                public override string GetInteractionName(Sim actor, IMirror target, InteractionObjectPair iop)
                 {
                     return Localization.LocalizeString(actor.IsFemale, sLocalizationKey + ":Name");
+                }
+
+                public override string[] GetPath(bool isFemale)
+                {
+                    return new[]
+                    {
+                        Localization.LocalizeString(isFemale, kLocalizationPath + ":Path")
+                    };
                 }
 
                 public override bool Test(Sim actor, IMirror target, bool isAutonomous, ref Sims3.SimIFace.GreyedOutTooltipCallback greyedOutTooltipCallback)
@@ -123,9 +147,17 @@ namespace Destrospean.HairTrouble
             [DoesntRequireTuning]
             public class Definition : ImmediateInteractionDefinition<Sim, Sim, ResetOriginalHair>
             {
-                public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair interaction)
+                public override string GetInteractionName(Sim actor, Sim target, InteractionObjectPair iop)
                 {
                     return Localization.LocalizeString(target.IsFemale, sLocalizationKey + ":Name");
+                }
+
+                public override string[] GetPath(bool isFemale)
+                {
+                    return new[]
+                    {
+                        Localization.LocalizeString(isFemale, kLocalizationPath + ":Path")
+                    };
                 }
 
                 public override bool Test(Sim actor, Sim target, bool isAutonomous, ref Sims3.SimIFace.GreyedOutTooltipCallback greyedOutTooltipCallback)

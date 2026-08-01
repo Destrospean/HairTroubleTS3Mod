@@ -1,28 +1,23 @@
 ﻿using System;
 using Destrospean.PreserveGeneticHair;
-using MonoPatcherLib;
 using Sims3.Gameplay.Actors;
 using Sims3.Gameplay.EventSystem;
 using Sims3.Gameplay.Objects.Decorations;
 using Sims3.SimIFace;
 
-namespace System.Runtime.CompilerServices
-{
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-    public class ExtensionAttribute : Attribute
-    {
-    }
-}
-
 namespace Destrospean.HairTrouble
 {
-    [Plugin]
     public class Main
     {
-        static EventListener sSimDescriptionDisposedListener, sSimInstantiatedListener, sSimSelectedListener;
+        [Tunable]
+        protected static bool kInstantiator = false;
 
         static Main()
         {
+            Common.ReplaceMethod(typeof(Sims3.Gameplay.CAS.Genetics).GetMethod("InheritHairColor"), typeof(Replacements).GetMethod("InheritHairColor"));
+            EventListener simDescriptionDisposedListener = null,
+            simInstantiatedListener = null,
+            simSelectedListener = null;
             World.sOnObjectPlacedInLotEventHandler += (sender, e) =>
                 {
                     World.OnObjectPlacedInLotEventArgs onObjectPlacedInLotEventArgs = e as World.OnObjectPlacedInLotEventArgs;
@@ -33,7 +28,7 @@ namespace Destrospean.HairTrouble
                 };
             World.sOnWorldLoadFinishedEventHandler += (sender, e) =>
                 {
-                    //SimHairGrowth.InitHairGrowthStateMap();
+                    SimHairGrowth.InitHairGrowthStateMap();
                     foreach (Mirror mirror in Sims3.Gameplay.Queries.GetObjects<Mirror>())
                     {
                         AddInteractions(mirror);
@@ -49,7 +44,7 @@ namespace Destrospean.HairTrouble
                             sim.SimDescription.InitOriginalOverallHairColors();
                         }
                     }
-                    sSimDescriptionDisposedListener = EventTracker.AddListener(EventTypeId.kSimDescriptionDisposed, evt =>
+                    simDescriptionDisposedListener = EventTracker.AddListener(EventTypeId.kSimDescriptionDisposed, evt =>
                         {
                             try
                             {
@@ -65,7 +60,7 @@ namespace Destrospean.HairTrouble
                             }
                             return ListenerAction.Keep;
                         });
-                    sSimInstantiatedListener = EventTracker.AddListener(EventTypeId.kSimInstantiated, evt =>
+                    simInstantiatedListener = EventTracker.AddListener(EventTypeId.kSimInstantiated, evt =>
                         {
                             try
                             {
@@ -82,7 +77,7 @@ namespace Destrospean.HairTrouble
                             }
                             return ListenerAction.Keep;
                         });
-                    sSimSelectedListener = EventTracker.AddListener(EventTypeId.kEventSimSelected, evt =>
+                    simSelectedListener = EventTracker.AddListener(EventTypeId.kEventSimSelected, evt =>
                         {
                             try
                             {
@@ -103,30 +98,30 @@ namespace Destrospean.HairTrouble
                 };
             World.sOnWorldQuitEventHandler += (sender, e) =>
                 {
-                    EventTracker.RemoveListener(sSimDescriptionDisposedListener);
-                    EventTracker.RemoveListener(sSimInstantiatedListener);
-                    EventTracker.RemoveListener(sSimSelectedListener);
-                    sSimDescriptionDisposedListener = null;
-                    sSimInstantiatedListener = null;
-                    sSimSelectedListener = null;
+                    EventTracker.RemoveListener(simDescriptionDisposedListener);
+                    EventTracker.RemoveListener(simInstantiatedListener);
+                    EventTracker.RemoveListener(simSelectedListener);
+                    simDescriptionDisposedListener = null;
+                    simInstantiatedListener = null;
+                    simSelectedListener = null;
                 };
         }
 
         static void AddInteractions(Mirror mirror)
         {
-            if (mirror != null && !mirror.Interactions.Exists(x => x.InteractionDefinition.GetType() == Interactions.RemoveHairDye.Singleton.GetType()))
+            if (mirror != null)
             {
-                mirror.AddInteraction(Interactions.RemoveHairDye.Singleton);
+                mirror.AddInteraction(Interactions.RemoveHairDye.Singleton, true);
             }
         }
 
         static void AddInteractions(Sim sim)
         {
-            if (sim != null && !sim.Interactions.Exists(x => x.InteractionDefinition.GetType() == Interactions.ResetOriginalHair.Singleton.GetType()))
+            if (sim != null)
             {
-                //sim.AddInteraction(Interactions.DecrementHairGrowthState.Singleton);
-                //sim.AddInteraction(Interactions.IncrementHairGrowthState.Singleton);
-                sim.AddInteraction(Interactions.ResetOriginalHair.Singleton);
+                sim.AddInteraction(Interactions.DecrementHairGrowthState.Singleton, true);
+                sim.AddInteraction(Interactions.IncrementHairGrowthState.Singleton, true);
+                sim.AddInteraction(Interactions.ResetOriginalHair.Singleton, true);
             }
         }
     }

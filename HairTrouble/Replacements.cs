@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using MonoPatcherLib;
 using Sims3.Gameplay.CAS;
 using Sims3.Gameplay.Socializing;
 using Sims3.SimIFace;
@@ -8,7 +7,6 @@ namespace Destrospean.HairTrouble
 {
     public static class Replacements
     {
-        [ReplaceMethod(typeof(Genetics), "InheritHairColor")]
         public static Color[] InheritHairColor(Sims3.SimIFace.CAS.SimBuilder target, SimDescription[] parentSims, System.Random random)
         {
             List<Genealogy> genealogies = new List<Genealogy>();
@@ -45,11 +43,11 @@ namespace Destrospean.HairTrouble
             SimDescription simDescription;
             if (parentGenealogies.Count > 0 && (float)random.NextDouble() * 100 < Genetics.kHairColorChooseGrandparentChance)
             {
-                simDescription = parentGenealogies[random.Next(0, parentGenealogies.Count)].SimDescription;
+                simDescription = parentGenealogies[random.Next(parentGenealogies.Count)].SimDescription;
             }
             else
             {
-                simDescription = genealogies[random.Next(0, genealogies.Count)].SimDescription;
+                simDescription = genealogies[random.Next(genealogies.Count)].SimDescription;
             }
             Color[] colors = new Color[10];
             for (int i = 0; i < 4; i++)
