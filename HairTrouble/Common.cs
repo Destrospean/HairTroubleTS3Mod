@@ -53,16 +53,16 @@ namespace Destrospean.HairTrouble
             System.Runtime.InteropServices.Marshal.Copy(replacementByteArray, 28, new System.IntPtr(oldMethod.MethodHandle.Value.ToInt32() + 28), 12);
         }
 
-        public static void TryGetRandomItem<T>(this IEnumerable<T> enumerable, out T item) where T : class
+        public static bool TryGetRandomItem<T>(this IEnumerable<T> enumerable, out T item) where T : class
         {
             List<T> list = new List<T>(enumerable);
-            item = list.Count == 0 ? null : list[Sims3.Gameplay.Core.RandomUtil.GetInt(list.Count)];
+            return (item = list.Count == 0 ? null : list[Sims3.Gameplay.Core.RandomUtil.GetInt(list.Count)]) != null;
         }
 
-        public static void TryGetRandomItem<T>(this IEnumerable<T> enumerable, out T? item) where T : struct
+        public static bool TryGetRandomItem<T>(this IEnumerable<T> enumerable, out T? item) where T : struct
         {
             List<T> list = new List<T>(enumerable);
-            item = list.Count == 0 ? (T?)null : list[Sims3.Gameplay.Core.RandomUtil.GetInt(list.Count)];
+            return (item = list.Count == 0 ? (T?)null : list[Sims3.Gameplay.Core.RandomUtil.GetInt(list.Count)]).HasValue;
         }
     }
 }

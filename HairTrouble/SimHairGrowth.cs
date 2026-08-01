@@ -25,26 +25,21 @@ namespace Destrospean.HairTrouble
 
         public static void ApplyHairstylesWithGrowthStateToAllOutfits(this SimDescription simDescription, HairGrowthStates hairGrowthState, bool spin = false)
         {
-            CASPart? hairstyle;
-            HairGrowthStates outfitHairGrowthState;
-            if (!simDescription.GetOutfit(OutfitCategories.Everyday, 0).TryGetHairGrowthState(out outfitHairGrowthState, out hairstyle) || (outfitHairGrowthState & hairGrowthState) == 0)
-            {
-                GetValidHairstyles(hairGrowthState, simDescription.AgeGenderSpecies, OutfitCategories.Everyday, false).TryGetRandomItem(out hairstyle);
-            }
+            CASPart? hairstyle = null;
             simDescription.ApplyToAllOutfits((simBuilder, outfitCategory, outfitIndex) => ApplyHairstyleWithGrowthStateToOutfit(simDescription, simBuilder, outfitCategory, outfitIndex, hairGrowthState, ref hairstyle), spin);
         }
 
         public static SimOutfit ApplyHairstyleWithGrowthStateToOutfit(this SimDescription simDescription, SimBuilder simBuilder, OutfitCategories outfitCategory, int outfitIndex, HairGrowthStates hairGrowthState, ref CASPart? hairstyle)
         {
-            CASPart[] validHairstyles = GetValidHairstyles(hairGrowthState, simDescription.AgeGenderSpecies, outfitCategory, false);
-            if (validHairstyles.Length == 0)
+            HairGrowthStates outfitHairGrowthState;
+            hairstyle = hairstyle ?? (simDescription.GetOutfit(OutfitCategories.Everyday, 0).TryGetHairGrowthState(out outfitHairGrowthState, out hairstyle) && (outfitHairGrowthState & hairGrowthState) != 0 ? hairstyle : (GetValidHairstyles(hairGrowthState, simDescription.AgeGenderSpecies, allowHats: false).TryGetRandomItem(out hairstyle) ? hairstyle : null));
+            if (hairstyle == null)
             {
                 return null;
             }
-            CASPart currentHair = (hairstyle = hairstyle ?? validHairstyles.GetRandomItem()).Value;
             simBuilder.PrepareForOutfit(simDescription.GetOutfit(outfitCategory, outfitIndex));
             simBuilder.RemoveParts(BodyTypes.Hair);
-            simBuilder.AddPart(Array.Exists(validHairstyles, x => x.Equals(currentHair)) ? currentHair : validHairstyles.GetRandomItem());
+            simBuilder.AddPart(hairstyle.Value);
             OutfitUtils.InjectBodyHairColor(simBuilder, simDescription.BodyHairColor.ActiveColor);
             OutfitUtils.InjectEyeBrowHairColor(simBuilder, simDescription.EyebrowColor.ActiveColor);
             OutfitUtils.InjectHairColor(simBuilder, Array.ConvertAll(simDescription.FacialHairColors, x => x.ActiveColor), BodyTypes.Beard);
