@@ -77,8 +77,8 @@ namespace Destrospean.HairTroubleGrowthStateAssigner
             // Get a unique name for the assembly and _XML resource
             var assemblyName = "HairTrouble_" + System.Security.Cryptography.FNV32.GetHash(Guid.NewGuid().ToString());
 
-            // Load the base package and create a new package to clone to
-            IPackage package = s3pi.Package.Package.NewPackage(0);
+            // Create a new package
+            var package = s3pi.Package.Package.NewPackage(0);
 
             // Get the assembly and XML
             var assembly = AssemblyDefinition.ReadAssembly(typeof(Program).Assembly.GetManifestResourceStream("HairTrouble_Base.dll"));
